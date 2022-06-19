@@ -9,63 +9,42 @@ import {
   Put,
 } from '@nestjs/common';
 import { REPORT_TYPE } from './enum';
-import { data, Report } from './data';
-import { v4 as uuid } from 'uuid';
+import { AppService } from './app.service';
+import { Reportable } from './interface';
 @Controller('/report/:type')
 export class AppController {
+  constructor(private readonly appService: AppService) {}
+
   @Get()
   getAllReports(@Param('type') type: REPORT_TYPE) {
-    return data.reports.filter((elem) => elem.type === type);
+    return this.appService.getAllReports(type);
   }
 
   @Get(':id')
   getReportById(@Param('type') type: REPORT_TYPE, @Param('id') id: string) {
-    return data.reports
-      .filter((elem) => elem.type === type)
-      .find((elem) => elem.id === id);
+    return this.appService.getReportById(type, id);
   }
 
   @Post()
   createReport(
     @Param('type') type: REPORT_TYPE,
-    @Body() { amount, source }: { amount: number; source: string },
+    @Body() { amount, source }: Reportable,
   ) {
-    const newReport: Report = {
-      id: uuid(),
-      amount,
-      source,
-      created_at: new Date(),
-      updated_at: new Date(),
-      type,
-    };
-
-    data.reports = [...data.reports, newReport];
-    return newReport;
+    return this.appService.createReport(type, { amount, source });
   }
 
   @Put(':id')
   updateReportById(
     @Param('type') type: REPORT_TYPE,
     @Param('id') id: string,
-    @Body() body: { amount?: number; source?: string },
+    @Body() body: Reportable,
   ) {
-    const findIndexOfElem = data.reports
-      .filter((elem) => elem.type === type)
-      .findIndex((elem) => elem.id === id);
-
-    if (findIndexOfElem === -1) return 'No such record found!';
-    data.reports[findIndexOfElem] = {
-      ...data.reports[findIndexOfElem],
-      ...body,
-    };
+    return this.appService.updateReportById(type, id, body);
   }
 
   @HttpCode(204)
   @Delete(':id')
   deleteReportById(@Param('type') type: REPORT_TYPE, @Param('id') id: string) {
-    data.reports = data.reports
-      .filter((elem) => elem.type === type)
-      .filter((elem) => elem.id !== id);
-    return;
+    return this.appService.deleteReportById(type, id);
   }
 }
