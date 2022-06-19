@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { REPORT_TYPE } from './enum';
 import { AppService } from './app.service';
-import { Reportable } from './interface';
+import { CreateReportDTO, UpdateReportDTO } from './dtos/report.dto';
 @Controller('/report/:type')
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -35,7 +35,7 @@ export class AppController {
   @Post()
   createReport(
     @Param('type', new ParseEnumPipe(REPORT_TYPE)) type: REPORT_TYPE,
-    @Body() { amount, source }: Reportable,
+    @Body() { amount, source }: CreateReportDTO,
   ) {
     return this.appService.createReport(type, { amount, source });
   }
@@ -44,7 +44,7 @@ export class AppController {
   updateReportById(
     @Param('type', new ParseEnumPipe(REPORT_TYPE)) type: REPORT_TYPE,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: Reportable,
+    @Body() body: UpdateReportDTO,
   ) {
     return this.appService.updateReportById(type, id, body);
   }

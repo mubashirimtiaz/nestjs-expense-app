@@ -2,7 +2,7 @@ import { REPORT_TYPE } from './enum';
 import { data } from './data';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { Report, Reportable } from './interface';
+import { OptionalReportable, Report, Reportable } from './interface';
 
 @Injectable()
 export class AppService {
@@ -30,7 +30,7 @@ export class AppService {
     return newReport;
   }
 
-  updateReportById(type: REPORT_TYPE, id: string, body: Reportable) {
+  updateReportById(type: REPORT_TYPE, id: string, body: OptionalReportable) {
     const findIndexOfElem = data.reports
       .filter((elem) => elem.type === type)
       .findIndex((elem) => elem.id === id);

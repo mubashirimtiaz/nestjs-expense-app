@@ -5,6 +5,11 @@ export interface Reportable {
   source: string;
 }
 
+export interface OptionalReportable {
+  amount?: number;
+  source?: string;
+}
+
 export interface Report {
   id: string;
   source: string;
