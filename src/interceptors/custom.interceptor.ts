@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { Report } from './interface';
+import { Report } from '../interface';
 
 export class CustomInterceptor implements NestInterceptor {
   intercept(
