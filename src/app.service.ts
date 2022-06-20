@@ -3,20 +3,28 @@ import { data } from './data';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { OptionalReportable, Report, Reportable } from './interface';
+import { ReportResponse } from './dtos/report.dto';
 
 @Injectable()
 export class AppService {
-  getAllReports(type: REPORT_TYPE) {
-    return data.reports.filter((elem) => elem.type === type);
-  }
-
-  getReportById(type: REPORT_TYPE, id: string) {
+  getAllReports(type: REPORT_TYPE): ReportResponse[] {
     return data.reports
       .filter((elem) => elem.type === type)
-      .find((elem) => elem.id === id);
+      .map((elem) => new ReportResponse(elem));
   }
 
-  createReport(type: REPORT_TYPE, { amount, source }: Reportable) {
+  getReportById(type: REPORT_TYPE, id: string): ReportResponse {
+    const report = data.reports
+      .filter((elem) => elem.type === type)
+      .find((elem) => elem.id === id);
+
+    return new ReportResponse(report);
+  }
+
+  createReport(
+    type: REPORT_TYPE,
+    { amount, source }: Reportable,
+  ): ReportResponse {
     const newReport: Report = {
       id: uuid(),
       amount,
@@ -27,20 +35,25 @@ export class AppService {
     };
 
     data.reports = [...data.reports, newReport];
-    return newReport;
+    return new ReportResponse(newReport);
   }
 
-  updateReportById(type: REPORT_TYPE, id: string, body: OptionalReportable) {
+  updateReportById(
+    type: REPORT_TYPE,
+    id: string,
+    body: OptionalReportable,
+  ): ReportResponse {
     const findIndexOfElem = data.reports
       .filter((elem) => elem.type === type)
       .findIndex((elem) => elem.id === id);
 
-    if (findIndexOfElem === -1) return 'No such record found!';
+    if (findIndexOfElem === -1) return;
     data.reports[findIndexOfElem] = {
       ...data.reports[findIndexOfElem],
       ...body,
       updated_at: new Date(),
     };
+    return new ReportResponse(data.reports[findIndexOfElem]);
   }
 
   deleteReportById(type: REPORT_TYPE, id: string) {
